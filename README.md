@@ -5,10 +5,8 @@ A modern, responsive, and feature-rich To-Do List Progressive Web App (PWA) desi
 ## 🚀 Features
 
 - ✅ Add, edit, complete, and delete tasks
-- 📅 Set deadlines and categorize tasks with emoji & color
+- 📅 Set deadlines and categorize tasks 
 - 🎨 Light and dark themes (auto and manual toggle)
-- 📊 Charts for monthly task stats, category distribution, and weekly activity
-- 🔍 Task search and sorting (by date, deadline, or name)
 - 📦 LocalStorage-based persistence (no backend needed)
 - 📱 Fully iPhone-compatible – works as a native app via Safari
 - ⚙️ Installable PWA with offline functionality
@@ -41,5 +39,7 @@ A modern, responsive, and feature-rich To-Do List Progressive Web App (PWA) desi
 ├── manifest-light.json      # Light theme manifest (loaded dynamically)
 ├── manifest-dark.json       # Dark theme manifest (auto-detected)
 ├── favicon.ico              # App icon
+├── icon-dark.png            # iOS/Android dark mode icon
+├── icon-light.png           # iOS/Android light mode icon
 ├── style.css                # App styling (not included here)
-├── script.js                # App functionality (not included here)
+├── service-worker.js        # Enables PWA offline support and caching
