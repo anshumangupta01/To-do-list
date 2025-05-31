@@ -1,0 +1,560 @@
+/* Reset and base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-color, #f9f9f9);
+  color: var(--text-color, #222);
+  min-height: 100vh;
+  padding: 20px;
+  transition: background-color 0.3s, color 0.3s;
+}
+.card {
+  max-width: 900px;
+  margin: 0 auto 30px;
+  padding: 20px 30px;
+  border-radius: 12px;
+  background-color: var(--card-bg, #fff);
+  box-shadow:
+    0 6px 15px rgb(0 0 0 / 0.1),               /* subtle black shadow */
+    0 0 15px 6px var(--accent-color-light);    /* softer theme-based glow */
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 2.5rem;
+  user-select: none;
+}
+
+/* Form and controls */
+
+form#todo-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 150px 150px auto;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+form#todo-form input[type="text"],
+form#todo-form textarea,
+form#todo-form input[type="date"],
+form#todo-form select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 2px solid var(--input-border);
+  border-radius: 6px;
+  transition: border-color 0.3s;
+  background-color: var(--input-focus-bg); /* Add this line */
+}
+
+form#todo-form input[type="text"]:focus,
+form#todo-form textarea:focus,
+form#todo-form input[type="date"]:focus,
+form#todo-form select:focus {
+  outline: none;
+  border-color: var(--accent-color, #007bff);
+  background-color: var(--input-focus-bg, #fff);
+}
+
+form#todo-form textarea {
+  resize: vertical;
+  min-height: 40px;
+  max-height: 80px;
+}
+
+form#todo-form button[type="submit"] {
+  background-color: var(--accent-color, #007bff);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+form#todo-form button[type="submit"]:hover {
+  background-color: var(--accent-hover, #0056b3);
+}
+
+#custom-category {
+  display: none;
+}
+
+/* Theme selector */
+
+#theme-select {
+  margin-left: 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 2px solid var(--input-border);
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: var(--input-focus-bg); /* Add this line */
+}
+
+/* Control card & filter */
+
+.control-card {
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 10px;
+  padding: 15px;
+  background-color: var(--card-bg, #fff);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+}
+
+.control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.filter-wrapper {
+  position: relative;
+}
+
+#filterToggle {
+  background-color: var(--accent-color, #007bff);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+  transition: background-color 0.3s;
+}
+
+#filterToggle:hover {
+  background-color: var(--accent-hover, #0056b3);
+}
+
+.filter-options {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--input-border, #ccc);
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 0.15);
+  display: flex;
+  flex-direction: row;  /* horizontal layout */
+  gap: 8px;             /* space between buttons */
+  padding: 8px;         /* optional, for some breathing room */
+  z-index: 100;
+}
+
+.filter-options.hidden {
+  display: none;
+}
+
+.filter-options button {
+  background: none;
+  border: none;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-color, #222);
+  text-align: left;
+  transition: background-color 0.2s;
+  user-select: none;
+}
+
+.filter-options button:hover {
+  background-color: var(--accent-color-light, #e0e7ff);
+}
+
+/* Delete all button */
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+  transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+  background-color: #a71d2a;
+}
+
+/* Todo Grid & Cards */
+
+.todo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 40px; /* increased gap for more space between cards */
+  max-width: 900px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+
+.todo-card {
+  background-color: var(--card-bg, #fff);
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin: 5px;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.12);
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  transition: box-shadow 0.3s, background-color 0.3s;
+  cursor: default;
+  user-select: none;
+  border: 2px solid var(--input-border, #ccc);
+  
+}
+
+.todo-card.done {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.todo-left {
+  margin-bottom: 12px;
+}
+
+.todo-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.todo-text {
+  flex-grow: 1;
+}
+
+.separator {
+  color: var(--accent-color, #007bff);
+  user-select: none;
+}
+
+.todo-category {
+  font-style: italic;
+  color: var(--accent-color-dark, #004085);
+}
+
+.todo-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #555);
+  white-space: pre-line;
+}
+
+.todo-right {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.todo-date {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--date-color, #888);
+}
+
+.todo-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--accent-color, #007bff);
+  font-size: 1.2rem;
+  margin-left: 10px;
+  transition: color 0.2s;
+}
+
+.todo-actions button:hover {
+  color: var(--accent-hover, #0056b3);
+}
+
+/* Show/hide custom category input */
+#custom-category {
+  transition: all 0.3s ease;
+}
+
+
+/* Responsive */
+
+@media (max-width: 800px) {
+  form#todo-form {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  #theme-select {
+    margin-left: 0;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .control-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .todo-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+/* THEMES */
+
+/* Light theme (default) - Darkened background, brighter text */
+body.theme-light {
+  --bg-color: #e0e0e0;           /* darker gray */
+  --text-color: #111;            /* darker but very bright text */
+  --input-border: #999;
+  --accent-color: #3399ff;
+  --accent-hover: #004c99;
+  --accent-color-light: #c6d9ff;
+  --accent-color-dark: #003366;
+  --input-focus-bg: #d9d9d9;
+  --card-bg: #e6e6e6;
+  --text-secondary: #333;
+  --date-color: #555;
+}
+
+/* Dark theme */
+body.theme-dark {
+  --bg-color: #0d0d0d;          /* darker black */
+  --text-color: #f5f5f5;        /* brighter white */
+  --input-border: #666;
+  --accent-color: #5aabe8;
+  --accent-hover: #3e85c9;
+  --accent-color-light: #4479aa;
+  --accent-color-dark: #1e3a5a;
+  --input-focus-bg: #1a1a1a;
+  --card-bg: #151515;
+  --text-secondary: #ccc;
+  --date-color: #bbb;
+}
+
+/* Ocean Blue */
+body.theme-ocean-blue {
+  --bg-color: #b2d8d8;          /* darker cyan */
+  --text-color: #00796b;        /* brighter teal */
+  --input-border: #1b7a71;
+  --accent-color: #004d40;
+  --accent-hover: #00332b;
+  --accent-color-light: #80cbc4;
+  --accent-color-dark: #00332b;
+  --input-focus-bg: #b2d8d8;
+  --card-bg: #cdece9;
+  --text-secondary: #004d40;
+  --date-color: #00332b;
+}
+
+/* Sunset Orange */
+body.theme-sunset-orange {
+  --bg-color: #d9a275;          /* darker orange */
+  --text-color: #ff5722;        /* brighter orange */
+  --input-border: #e05e24;
+  --accent-color: #bf360c;
+  --accent-hover: #a02c08;
+  --accent-color-light: #f8b188;
+  --accent-color-dark: #8c2a07;
+  --input-focus-bg: #f7baa1;
+  --card-bg: #f5d6bb;
+  --text-secondary: #bf360c;
+  --date-color: #8c2a07;
+}
+
+/* Forest Green */
+body.theme-forest-green {
+  --bg-color: #a2c79e;          /* darker green */
+  --text-color: #2e7d32;        /* brighter green */
+  --input-border: #3f7d2e;
+  --accent-color: #1b5e20;
+  --accent-hover: #145214;
+  --accent-color-light: #99c79a;
+  --accent-color-dark: #11350e;
+  --input-focus-bg: #a2c79e;
+  --card-bg: #bde6c1;
+  --text-secondary: #1b5e20;
+  --date-color: #11350e;
+}
+
+/* Lavender Purple */
+body.theme-lavender-purple {
+  --bg-color: #b799c9;          /* darker purple */
+  --text-color: #7b1fa2;        /* brighter purple */
+  --input-border: #9a57be;
+  --accent-color: #6a1b9a;
+  --accent-hover: #4d1370;
+  --accent-color-light: #d4bbf0;
+  --accent-color-dark: #3d0960;
+  --input-focus-bg: #b799c9;
+  --card-bg: #d9bee3;
+  --text-secondary: #6a1b9a;
+  --date-color: #4d1370;
+}
+
+/* Classic Red */
+body.theme-classic-red {
+  --bg-color: #d47373;          /* darker red */
+  --text-color: #e53935;        /* brighter red */
+  --input-border: #db5050;
+  --accent-color: #b71c1c;
+  --accent-hover: #8e1414;
+  --accent-color-light: #f9a1a1;
+  --accent-color-dark: #660e0e;
+  --input-focus-bg: #f0baba;
+  --card-bg: #f3c4c4;
+  --text-secondary: #b71c1c;
+  --date-color: #8e1414;
+}
+
+/* Mustard Yellow */
+body.theme-mustard-yellow {
+  --bg-color: #d4ca5a;          /* darker yellow */
+  --text-color: #f9a825;        /* brighter yellow */
+  --input-border: #e6d42f;
+  --accent-color: #fbc02d;
+  --accent-hover: #cda800;
+  --accent-color-light: #fff6a8;
+  --accent-color-dark: #a97c00;
+  --input-focus-bg: #f0ea75;
+  --card-bg: #f9f5b1;
+  --text-secondary: #f57f17;
+  --date-color: #a97c00;
+}
+
+/* Cool Gray */
+body.theme-cool-gray {
+  --bg-color: #cfd8dc;          /* darker gray */
+  --text-color: #455a64;        /* brighter dark gray */
+  --input-border: #7a8b91;
+  --accent-color: #546e7a;
+  --accent-hover: #37474f;
+  --accent-color-light: #d3e0e5;
+  --accent-color-dark: #263238;
+  --input-focus-bg: #dce6eb;
+  --card-bg: #e6eef2;
+  --text-secondary: #37474f;
+  --date-color: #263238;
+}
+
+/* Coral Pink */
+body.theme-coral-pink {
+  --bg-color: #dba3b6;          /* darker pink */
+  --text-color: #ce3175;        /* brighter pink */
+  --input-border: #db7991;
+  --accent-color: #ad1457;
+  --accent-hover: #880e4f;
+  --accent-color-light: #f2a4bc;
+  --accent-color-dark: #660934;
+  --input-focus-bg: #f1a9be;
+  --card-bg: #f9c8d6;
+  --text-secondary: #ad1457;
+  --date-color: #660934;
+}
+
+/* Teal */
+body.theme-teal {
+  --bg-color: #9ac7c5;          /* darker teal */
+  --text-color: #00695c;        /* brighter teal */
+  --input-border: #1e8e8a;
+  --accent-color: #004d40;
+  --accent-hover: #00332b;
+  --accent-color-light: #7ccccc;
+  --accent-color-dark: #00332b;
+  --input-focus-bg: #9ac7c5;
+  --card-bg: #b8dedc;
+  --text-secondary: #00796b;
+  --date-color: #00332b;
+}
+
+/* Plum */
+body.theme-plum {
+  --bg-color: #b38fbf;          /* darker plum */
+  --text-color: #6a1b9a;        /* brighter plum */
+  --input-border: #a17ab7;
+  --accent-color: #4a148c;
+  --accent-hover: #3a0f6c;
+  --accent-color-light: #cdb1dd;
+  --accent-color-dark: #2b0a46;
+  --input-focus-bg: #b38fbf;
+  --card-bg: #d6b9e0;
+  --text-secondary: #6a1b9a;
+  --date-color: #3a0f6c;
+}
+
+/* Slate Blue */
+body.theme-slate-blue {
+  --bg-color: #b0b8e6;          /* darker slate */
+  --text-color: #1a237e;        /* brighter blue */
+  --input-border: #6370ca;
+  --accent-color: #283593;
+  --accent-hover: #1a237e;
+  --accent-color-light: #c5cae9;
+  --accent-color-dark: #121858;
+  --input-focus-bg: #b0b8e6;
+  --card-bg: #d4d9f3;
+  --text-secondary: #283593;
+  --date-color: #121858;
+}
+
+/* Olive */
+body.theme-olive {
+  --bg-color: #d6dd9d;          /* darker olive */
+  --text-color: #7a8300;        /* brighter olive */
+  --input-border: #c0ca33;
+  --accent-color: #827717;
+  --accent-hover: #5f6500;
+  --accent-color-light: #dceda3;
+  --accent-color-dark: #4a4d00;
+  --input-focus-bg: #d6dd9d;
+  --card-bg: #e4eaa9;
+  --text-secondary: #827717;
+  --date-color: #4a4d00;
+}
+
+/* Midnight Blue */
+body.theme-midnight-blue {
+  --bg-color: #aecaf9;          /* darker blue */
+  --text-color: #0a357d;        /* brighter blue */
+  --input-border: #4a8bf9;
+  --accent-color: #0d47a1;
+  --accent-hover: #08326a;
+  --accent-color-light: #bedaff;
+  --accent-color-dark: #05234d;
+  --input-focus-bg: #aecaf9;
+  --card-bg: #cfe2ff;
+  --text-secondary: #0d47a1;
+  --date-color: #05234d;
+}
+
+/* Candy Pink */
+body.theme-candy-pink {
+  --bg-color: #dba3b6;          /* darker candy pink */
+  --text-color: #9c1450;        /* brighter candy */
+  --input-border: #db7991;
+  --accent-color: #880e4f;
+  --accent-hover: #5f0936;
+  --accent-color-light: #f2a4bc;
+  --accent-color-dark: #4a0628;
+  --input-focus-bg: #f1a9be;
+  --card-bg: #f9c8d6;
+  --text-secondary: #880e4f;
+  --date-color: #4a0628;
+}

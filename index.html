@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f9f9f9" />
+  <link id="manifest-link" rel="manifest" href="manifest-light.json" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <title>To-Do App</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  <!-- Manifest -->
+  <link id="manifest" rel="manifest" href="manifest-light.json" />
+    <script>
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.getElementById('manifest').setAttribute('href', 'manifest-dark.json');
+      }
+    </script>
+
+
+  <!-- Icons for light/dark mode on iOS -->
+  <link rel="apple-touch-icon" href="icon-dark.png" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" href="icon-light.png" media="(prefers-color-scheme: light)">
+
+</head>
+<body>
+  <div class="card">
+  <h1>To-Do</h1>
+  
+  <label for="theme-select">Select Theme: </label>
+  <select id="theme-select" aria-label="Theme selector"></select>
+
+  <form id="todo-form">
+    <input type="text" id="todo-input" placeholder="Todo..." required />
+    <textarea id="todo-desc" placeholder="Description..."></textarea>
+    <select id="todo-category" required></select>
+    <input type="date" id="todo-date" required />
+    <input type="text" id="custom-category" placeholder="Enter new category" />
+    <button type="submit">Add Task</button>
+  </form>
+  </div>
+
+  <div class="control-card">
+    <div class="control-header">
+      <div class="filter-wrapper">
+        <button id="filterToggle">Filter ▼</button>
+        <div id="filterOptions" class="filter-options hidden">
+          <button onclick="filterTodos('all')">All</button>
+          <button onclick="filterTodos('completed')">Completed</button>
+          <button onclick="filterTodos('not-completed')">Not Completed</button>
+        </div>
+      </div>
+      <button id="deleteAllBtn" class="delete-btn">Delete All</button>
+    </div>
+
+    <div id="todoContainer" class="todo-grid">
+      <div id="todo-list">
+        <!-- Todo cards will be here -->
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    const themes = [
+      { id: 'theme-light', name: 'Light' },
+      { id: 'theme-dark', name: 'Dark' },
+      { id: 'theme-ocean-blue', name: 'Ocean Blue' },
+      { id: 'theme-sunset-orange', name: 'Sunset Orange' },
+      { id: 'theme-forest-green', name: 'Forest Green' },
+      { id: 'theme-lavender-purple', name: 'Lavender Purple' },
+      { id: 'theme-classic-red', name: 'Classic Red' },
+      { id: 'theme-mustard-yellow', name: 'Mustard Yellow' },
+      { id: 'theme-cool-gray', name: 'Cool Gray' },
+      { id: 'theme-coral-pink', name: 'Coral Pink' },
+      { id: 'theme-teal', name: 'Teal' },
+      { id: 'theme-plum', name: 'Plum' },
+      { id: 'theme-slate-blue', name: 'Slate Blue' },
+      { id: 'theme-olive', name: 'Olive' },
+      { id: 'theme-midnight-blue', name: 'Midnight Blue' },
+      { id: 'theme-candy-pink', name: 'Candy Pink' }
+    ];
+
+    function updateThemeColor(theme) {
+      // Update meta and manifest for light/dark variants only
+      if (theme === 'theme-dark') {
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#121212');
+        document.querySelector('#manifest-link').setAttribute('href', 'manifest-dark.json');
+      } else {
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f9f9f9');
+        document.querySelector('#manifest-link').setAttribute('href', 'manifest-light.json');
+      }
+    }
+
+    function applyTheme(themeId) {
+      // Remove all theme classes
+      themes.forEach(t => document.body.classList.remove(t.id));
+      document.body.classList.add(themeId);
+      updateThemeColor(themeId);
+      localStorage.setItem('selectedTheme', themeId);
+    }
+
+    function populateThemeSelector() {
+      const select = document.getElementById('theme-select');
+      themes.forEach(theme => {
+        const opt = document.createElement('option');
+        opt.value = theme.id;
+        opt.textContent = theme.name;
+        select.appendChild(opt);
+      });
+
+      const saved = localStorage.getItem('selectedTheme') || 'theme-light';
+      select.value = saved;
+      applyTheme(saved);
+
+      select.addEventListener('change', () => {
+        applyTheme(select.value);
+      });
+    }
+
+    // Rest of your todo app logic here (including categories and todos)
+    // For brevity, I will reuse your todo code with minor adjustments:
+
+    const todoForm = document.getElementById('todo-form');
+    const todoInput = document.getElementById('todo-input');
+    const todoDesc = document.getElementById('todo-desc');
+    const todoDate = document.getElementById('todo-date');
+    const todoCategory = document.getElementById('todo-category');
+    const customCategoryInput = document.getElementById('custom-category');
+    const todoList = document.getElementById('todo-list');
+
+    let todos = JSON.parse(localStorage.getItem('todos')) || [];
+    let categories = JSON.parse(localStorage.getItem('categories')) || ['Work', 'Personal', 'Study'];
+
+    function saveTodos() {
+      localStorage.setItem('todos', JSON.stringify(todos));
+    }
+
+    function saveCategories() {
+      localStorage.setItem('categories', JSON.stringify(categories));
+    }
+
+    function renderTodos() {
+      todoList.innerHTML = '';
+      todos.forEach((todo, index) => {
+        const card = document.createElement('div');
+        card.className = 'todo-card' + (todo.done ? ' done' : '');
+
+        card.innerHTML = `
+          <div class="todo-left">
+          <div class="todo-header-meta">
+            <span class="todo-text">${todo.text}</span>
+            <span class="separator">|</span>
+            <em class="todo-category">${todo.category}</em>
+          </div>
+
+            <p class="todo-desc">${todo.desc || ''}</p>
+          </div>
+          <div class="todo-right">
+            <div class="todo-date">${todo.date}</div>
+            <div class="todo-actions">
+              <button onclick="toggleDone(${index})" title="Mark Done"><i class="fa-solid fa-check"></i></button>
+              <button onclick="editTodo(${index})" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button onclick="deleteTodo(${index})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+
+        todoList.appendChild(card);
+      });
+    }
+
+    function addTodo(text, desc, date, category) {
+      todos.push({ text, desc, date, category, done: false });
+      saveTodos();
+      renderTodos();
+    }
+
+    function toggleDone(index) {
+      todos[index].done = !todos[index].done;
+      saveTodos();
+      renderTodos();
+    }
+
+    function deleteTodo(index) {
+      todos.splice(index, 1);
+      saveTodos();
+      renderTodos();
+    }
+
+    function editTodo(index) {
+      const todo = todos[index];
+      const newText = prompt('Edit Title:', todo.text);
+      const newDesc = prompt('Edit Description:', todo.desc);
+      const newDate = prompt('Edit Date:', todo.date);
+      const newCategory = prompt('Edit Category:', todo.category);
+
+      if (newText && newDate && newCategory) {
+        todos[index] = { ...todo, text: newText, desc: newDesc, date: newDate, category: newCategory };
+        saveTodos();
+        renderTodos();
+      }
+    }
+
+    todoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let text = todoInput.value.trim();
+      let desc = todoDesc.value.trim();
+      let date = todoDate.value;
+      let category = todoCategory.value;
+
+      if (category === 'custom') {
+        const custom = customCategoryInput.value.trim();
+        if (custom) {
+          category = custom;
+          if (!categories.includes(custom)) {
+            categories.push(custom);
+            saveCategories();
+            loadCategories();
+          }
+        } else {
+          alert('Please enter a custom category');
+          return;
+        }
+      }
+
+      if (text && date && category) {
+        addTodo(text, desc, date, category);
+        todoForm.reset();
+        customCategoryInput.style.display = 'none';
+      }
+    });
+
+    function loadCategories() {
+      todoCategory.innerHTML = `<option value="">Select Category</option>`;
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        todoCategory.appendChild(opt);
+      });
+      // Add "Add new category" option
+      const customOpt = document.createElement('option');
+      customOpt.value = 'custom';
+      customOpt.textContent = 'Add new category...';
+      todoCategory.appendChild(customOpt);
+    }
+
+    todoCategory.addEventListener('change', () => {
+      if (todoCategory.value === 'custom') {
+        customCategoryInput.style.display = 'block';
+        customCategoryInput.focus();
+      } else {
+        customCategoryInput.style.display = 'none';
+      }
+    });
+
+    // Initialize everything
+    populateThemeSelector();
+    loadCategories();
+    renderTodos();
+
+    // Expose functions to global scope for inline onclick
+    window.toggleDone = toggleDone;
+    window.deleteTodo = deleteTodo;
+    window.editTodo = editTodo;
+
+    document.getElementById("filterToggle").addEventListener("click", function () {
+      const options = document.getElementById("filterOptions");
+      options.classList.toggle("hidden");
+    });
+
+    function filterTodos(filter) {
+      const cards = document.querySelectorAll('.todo-card');
+      cards.forEach(card => {
+        const isDone = card.classList.contains('done');
+        if (filter === 'all') {
+          card.style.display = 'block';
+        } else if (filter === 'completed') {
+          card.style.display = isDone ? 'block' : 'none';
+        } else if (filter === 'not-completed') {
+          card.style.display = !isDone ? 'block' : 'none';
+        }
+      });
+      document.getElementById("filterOptions").classList.add("hidden");
+    }
+
+    document.getElementById("deleteAllBtn").addEventListener("click", function () {
+      if (confirm("Are you sure you want to delete all tasks?")) {
+        document.getElementById("todoContainer").innerHTML = '';
+      }
+    });
+  </script>
+</body>
+</html>
