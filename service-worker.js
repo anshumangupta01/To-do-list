@@ -1,6 +1,6 @@
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open("papercalc-cache").then((cache) => {
+    caches.open("To-Do-cache").then((cache) => {
       return cache.addAll([
         "/",
         "/index.html",
